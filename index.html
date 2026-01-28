@@ -14,7 +14,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: #121212; color: #ffffff; font-family: 'Montserrat', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
         
-        /* --- Authentification (Simplifiée) --- */
+        /* --- Authentification --- */
         #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #121212; z-index: 9999; display: flex; justify-content: center; align-items: center; }
         .auth-box { background: #1e1e1e; padding: 40px; border-radius: 20px; border: 2px solid #FF0000; width: 400px; text-align: center; box-shadow: 0 0 20px rgba(255, 0, 0, 0.2); }
         .auth-input { width: 100%; padding: 12px; margin-bottom: 20px; background: #2a2a2a; border: 1px solid #333; color: white; border-radius: 8px; outline: none; text-align: center; font-size: 1.1rem; }
@@ -32,6 +32,10 @@
         .nav-item.active { color: #ffffff; }
         .nav-item.active::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 2px; background-color: #FF0000; }
 
+        .user-controls { display:flex; align-items:center; gap:10px; }
+        .btn-small { background:none; border:1px solid #555; color:#888; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:0.75rem; transition: 0.3s; }
+        .btn-small:hover { border-color: #FF0000; color: #fff; }
+
         /* --- Main Content --- */
         main { flex: 1; max-width: 1200px; margin: 0 auto; padding: 40px 20px; width: 100%; }
         .page-section { display: none; animation: fadeIn 0.5s; }
@@ -39,24 +43,9 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- GRILLE DES PACKS --- */
-        .packs-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, 240px); 
-            gap: 25px; 
-            margin-top: 30px;
-            justify-content: center; 
-        }
-
-        .pack-card { 
-            background: #1e1e1e; border: 2px solid #333; border-radius: 15px; 
-            display: flex; flex-direction: column; 
-            text-align: center; transition: 0.3s; cursor: pointer; 
-            aspect-ratio: 1 / 1; 
-            padding: 0; 
-            overflow: hidden; 
-        }
+        .packs-grid { display: grid; grid-template-columns: repeat(auto-fill, 240px); gap: 25px; margin-top: 30px; justify-content: center; }
+        .pack-card { background: #1e1e1e; border: 2px solid #333; border-radius: 15px; display: flex; flex-direction: column; text-align: center; transition: 0.3s; cursor: pointer; aspect-ratio: 1 / 1; padding: 0; overflow: hidden; }
         .pack-card:hover { border-color: #FF0000; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(255,0,0,0.2); }
-        
         .pack-card-img { width: 100%; height: 70%; object-fit: cover; border-bottom: 2px solid #333; }
         .pack-card h3 { color: #fff; font-size: 1.1rem; text-transform: uppercase; font-weight: 800; height: 30%; display: flex; align-items: center; justify-content: center; }
 
@@ -71,7 +60,6 @@
         .admin-panel { background: #1e1e1e; padding: 25px; border-radius: 15px; border-left: 5px solid #FF0000; margin-bottom: 40px; display: none; }
         .news-input, .news-textarea { width: 100%; background: #2a2a2a; border: 1px solid #333; color: white; padding: 12px; margin-bottom: 15px; border-radius: 8px; font-family: inherit; outline: none; }
         .file-label { background: #333; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: inline-block; border: 1px dashed #FF0000; color: #FF0000; font-weight: bold; font-size: 0.9rem; }
-        
         .news-item { background: #1a1a1a; padding: 25px; border-radius: 15px; margin-bottom: 30px; border: 1px solid #333; }
         .news-title { font-size: 1.8rem; font-weight: 800; color: #ffffff; }
         .news-media img, .news-media video { max-width: 100%; border-radius: 10px; margin-top: 15px; }
@@ -102,9 +90,10 @@
                 <div class="nav-item" onclick="nav('packs')">Packs</div>
                 <div class="nav-item" onclick="nav('news')">News</div>
             </nav>
-            <div style="display:flex; align-items:center; gap:15px;">
-                <span id="display-username" style="font-weight:bold; color:#fff;"></span>
-                <button onclick="logout()" style="background:none; border:1px solid #555; color:#888; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:0.8rem;">Quitter</button>
+            <div class="user-controls">
+                <span id="display-username" style="font-weight:bold; color:#fff; margin-right:5px;"></span>
+                <button onclick="changeUsername()" class="btn-small">Modifier</button>
+                <button onclick="logout()" class="btn-small">Quitter</button>
             </div>
         </header>
 
@@ -121,19 +110,19 @@
                 <h2 style="font-size:2rem; margin-bottom:30px; border-left: 5px solid #FF0000; padding-left: 15px;">Packs Disponibles</h2>
                 <div class="packs-grid">
                     <div class="pack-card" onclick="openCategory('full')">
-                        <img src="packcomplet.png" class="pack-card-img" alt="Pack" onerror="this.src='https://via.placeholder.com/300?text=Pack+Complet'">
+                        <img src="packcomplet.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/300?text=Pack+Complet'">
                         <h3>📦 Pack Complet</h3>
                     </div>
                     <div class="pack-card" onclick="openCategory('music')">
-                        <img src="sfxmusique.png" class="pack-card-img" alt="Pack" onerror="this.src='https://via.placeholder.com/300?text=Musique+SFX'">
+                        <img src="sfxmusique.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/300?text=Musique+SFX'">
                         <h3>🎵 Musiques & SFX</h3>
                     </div>
                     <div class="pack-card" onclick="openCategory('ext')">
-                        <img src="extensions.png" class="pack-card-img" alt="Pack" onerror="this.src='https://via.placeholder.com/300?text=Extensions'">
+                        <img src="extensions.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/300?text=Extensions'">
                         <h3>🧩 Extensions</h3>
                     </div>
                     <div class="pack-card" onclick="openCategory('art')">
-                        <img src="illustration.png" class="pack-card-img" alt="Pack" onerror="this.src='https://via.placeholder.com/300?text=Illustration'">
+                        <img src="illustration.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/300?text=Illustration'">
                         <h3>✏️ Illustration</h3>
                     </div>
                 </div>
@@ -142,14 +131,13 @@
             <section id="category-view" class="page-section">
                 <button onclick="nav('packs')" style="background:none; border:1px solid #555; color:#aaa; padding:5px 15px; border-radius:20px; cursor:pointer; margin-bottom:20px;">← Retour</button>
                 <h2 id="cat-title" style="font-size:2rem; margin-bottom:30px; color:#FF0000;">Catégorie</h2>
-
                 <div id="pack-admin-panel" class="admin-panel">
                     <h3 style="color:#FF0000; margin-bottom:15px;">➕ Ajouter un sous-pack</h3>
                     <input type="text" id="p-name" class="news-input" placeholder="Nom du Pack">
-                    <input type="text" id="p-url" class="news-input" placeholder="Lien (Google Drive, Mega...)">
-                    <textarea id="p-desc" class="news-textarea" rows="2" placeholder="Description courte..."></textarea>
+                    <input type="text" id="p-url" class="news-input" placeholder="Lien">
+                    <textarea id="p-desc" class="news-textarea" rows="2" placeholder="Description..."></textarea>
                     <div style="margin-bottom:15px;">
-                        <label for="pack-file" class="file-label">🖼️ Image de couverture</label>
+                        <label for="pack-file" class="file-label">🖼️ Image</label>
                         <input type="file" id="pack-file" accept="image/*" style="display:none;">
                         <span id="pack-file-name" style="margin-left:10px; color:#888; font-size:0.8rem;">Aucune image</span>
                     </div>
@@ -164,7 +152,7 @@
                     <input type="text" id="n-title" class="news-input" placeholder="Titre">
                     <textarea id="n-body" class="news-textarea" rows="4" placeholder="Message..."></textarea>
                     <input type="file" id="news-file" accept="image/*,video/*" style="display:none;">
-                    <label for="news-file" class="file-label">📁 Média (Img/Vid)</label>
+                    <label for="news-file" class="file-label">📁 Média</label>
                     <button class="auth-btn" style="width:200px; margin-left:10px;" onclick="publishNews()">Publier</button>
                 </div>
                 <h2 style="font-size:2rem; margin-bottom:30px;">Dernières Annonces</h2>
@@ -176,24 +164,29 @@
     </div>
 
     <script>
-        // --- CONFIGURATION ---
         const ADMIN_USERS = ['breezylegoat', 'blueredlegoat']; 
-        
-        let currentCategory = "";
-        let newsFileBase64 = "", newsFileType = "", packFileBase64 = "";
+        let currentCategory = "", newsFileBase64 = "", newsFileType = "", packFileBase64 = "";
 
-        // --- AUTH SIMPLIFIÉE ---
+        // --- AUTH ---
         function handleLogin() {
             const u = document.getElementById('user').value.trim();
             if(!u) return alert("Choisis un pseudo !");
-            
             localStorage.setItem('hub_session', u);
             startApp(u);
         }
 
+        function changeUsername() {
+            const newName = prompt("Entre ton nouveau pseudo :", localStorage.getItem('hub_session'));
+            if (newName && newName.trim() !== "") {
+                localStorage.setItem('hub_session', newName.trim());
+                startApp(newName.trim()); // Relance l'app pour mettre à jour les droits admin
+                alert("Pseudo mis à jour !");
+            }
+        }
+
         function checkIsAdmin() {
             const currentUser = localStorage.getItem('hub_session');
-            return ADMIN_USERS.includes(currentUser.toLowerCase()); // Minuscules pour éviter les erreurs
+            return currentUser ? ADMIN_USERS.includes(currentUser.toLowerCase()) : false;
         }
 
         function startApp(user) {
@@ -206,6 +199,7 @@
             document.getElementById('admin-area').style.display = isAdmin ? 'block' : 'none';
             document.getElementById('pack-admin-panel').style.display = isAdmin ? 'block' : 'none';
             loadNews();
+            if(currentCategory) loadSubPacks();
         }
 
         function logout() { localStorage.removeItem('hub_session'); location.reload(); }
@@ -221,126 +215,73 @@
             if(id === 'news') items[2].classList.add('active');
         }
 
-        // --- GESTION FICHIERS ---
+        // --- FICHIERS ---
         document.getElementById('pack-file').addEventListener('change', function(e) {
             if(!e.target.files.length) return;
             const reader = new FileReader();
-            reader.onload = (ex) => { 
-                packFileBase64 = ex.target.result; 
-                document.getElementById('pack-file-name').textContent = e.target.files[0].name;
-            };
+            reader.onload = (ex) => { packFileBase64 = ex.target.result; document.getElementById('pack-file-name').textContent = e.target.files[0].name; };
             reader.readAsDataURL(e.target.files[0]);
         });
-
         document.getElementById('news-file').addEventListener('change', function(e) {
             if(!e.target.files.length) return;
             const file = e.target.files[0];
             const reader = new FileReader();
-            reader.onload = (ex) => { 
-                newsFileBase64 = ex.target.result;
-                newsFileType = file.type.startsWith('image') ? 'img' : 'video';
-            };
+            reader.onload = (ex) => { newsFileBase64 = ex.target.result; newsFileType = file.type.startsWith('image') ? 'img' : 'video'; };
             reader.readAsDataURL(file);
         });
 
-        // --- GESTION PACKS ---
+        // --- PACKS ---
         const catTitles = { 'full': '📦 Pack Complet', 'music': '🎵 Musiques & SFX', 'ext': '🧩 Extensions', 'art': '✏️ Illustration' };
-
-        function openCategory(catId) {
-            currentCategory = catId;
-            nav('category-view');
-            document.getElementById('cat-title').textContent = catTitles[catId];
-            loadSubPacks();
-        }
-
+        function openCategory(catId) { currentCategory = catId; nav('category-view'); document.getElementById('cat-title').textContent = catTitles[catId]; loadSubPacks(); }
+        
         function addPack() {
-            const name = document.getElementById('p-name').value;
-            const url = document.getElementById('p-url').value;
-            const desc = document.getElementById('p-desc').value;
+            const name = document.getElementById('p-name').value, url = document.getElementById('p-url').value, desc = document.getElementById('p-desc').value;
             if(!name || !url) return alert("Nom et URL requis.");
-
             const allPacks = JSON.parse(localStorage.getItem('hub_packs_data') || '{}');
             if(!allPacks[currentCategory]) allPacks[currentCategory] = [];
-            
-            allPacks[currentCategory].push({ 
-                name, url, desc, 
-                img: packFileBase64 || 'https://via.placeholder.com/200?text=No+Image' 
-            });
-            
+            allPacks[currentCategory].push({ name, url, desc, img: packFileBase64 || 'https://via.placeholder.com/200?text=No+Image' });
             localStorage.setItem('hub_packs_data', JSON.stringify(allPacks));
-            alert("Pack ajouté !");
-            loadSubPacks();
+            alert("Pack ajouté !"); loadSubPacks();
             document.getElementById('p-name').value = ""; document.getElementById('p-url').value = ""; document.getElementById('p-desc').value = "";
             packFileBase64 = ""; document.getElementById('pack-file-name').textContent = "Aucune image";
         }
 
         function loadSubPacks() {
-            const container = document.getElementById('subpacks-container');
-            const allPacks = JSON.parse(localStorage.getItem('hub_packs_data') || '{}');
-            const list = allPacks[currentCategory] || [];
-            const isAdmin = checkIsAdmin();
+            const container = document.getElementById('subpacks-container'), allPacks = JSON.parse(localStorage.getItem('hub_packs_data') || '{}'), list = allPacks[currentCategory] || [], isAdmin = checkIsAdmin();
             container.innerHTML = list.length ? "" : "<p style='color:#666;'>Aucun pack ici.</p>";
             list.forEach((p, i) => {
-                container.innerHTML += `
-                    <div class="subpack-card" onclick="window.open('${p.url}', '_blank')">
-                        <img src="${p.img}" class="subpack-img">
-                        <div class="subpack-info">
-                            <div class="subpack-title">${p.name}</div>
-                            ${p.desc ? `<div class="subpack-description">${p.desc}</div>` : ''}
-                            ${isAdmin ? `<button class="delete-btn" onclick="event.stopPropagation(); deletePack(${i})">Supprimer</button>` : ''}
-                        </div>
-                    </div>`;
+                container.innerHTML += `<div class="subpack-card" onclick="window.open('${p.url}', '_blank')">
+                    <img src="${p.img}" class="subpack-img">
+                    <div class="subpack-info"><div class="subpack-title">${p.name}</div>
+                    ${p.desc ? `<div class="subpack-description">${p.desc}</div>` : ''}
+                    ${isAdmin ? `<button class="delete-btn" onclick="event.stopPropagation(); deletePack(${i})">Supprimer</button>` : ''}
+                    </div></div>`;
             });
         }
+        function deletePack(i) { if(!confirm("Supprimer ?")) return; const all = JSON.parse(localStorage.getItem('hub_packs_data')); all[currentCategory].splice(i, 1); localStorage.setItem('hub_packs_data', JSON.stringify(all)); loadSubPacks(); }
 
-        function deletePack(i) {
-            if(!confirm("Supprimer ce pack ?")) return;
-            const all = JSON.parse(localStorage.getItem('hub_packs_data'));
-            all[currentCategory].splice(i, 1);
-            localStorage.setItem('hub_packs_data', JSON.stringify(all));
-            loadSubPacks();
-        }
-
-        // --- GESTION NEWS ---
+        // --- NEWS ---
         function publishNews() {
-            const t = document.getElementById('n-title').value;
-            const b = document.getElementById('n-body').value;
+            const t = document.getElementById('n-title').value, b = document.getElementById('n-body').value;
             if(!t || !b) return alert("Titre et contenu requis.");
             const news = JSON.parse(localStorage.getItem('hub_news') || '[]');
             news.unshift({ title: t, body: b, file: newsFileBase64, type: newsFileType, date: new Date().toLocaleDateString() });
             localStorage.setItem('hub_news', JSON.stringify(news));
             location.reload();
         }
-
         function loadNews() {
-            const container = document.getElementById('news-container');
-            const news = JSON.parse(localStorage.getItem('hub_news') || '[]');
-            const isAdmin = checkIsAdmin();
+            const container = document.getElementById('news-container'), news = JSON.parse(localStorage.getItem('hub_news') || '[]'), isAdmin = checkIsAdmin();
             container.innerHTML = news.length ? "" : "<p style='color:#666;'>Aucune annonce.</p>";
             news.forEach((n, i) => {
                 let media = n.file ? (n.type === 'img' ? `<img src="${n.file}">` : `<video controls src="${n.file}"></video>`) : "";
-                container.innerHTML += `
-                    <div class="news-item">
-                        <div style="display:flex; justify-content:space-between;">
-                            <div class="news-title">${n.title}</div>
-                            ${isAdmin ? `<button class="delete-btn" onclick="deleteNews(${i})">Supprimer</button>` : ''}
-                        </div>
-                        <div style="color:#666; font-size:0.8rem; margin-bottom:15px;">Posté le ${n.date}</div>
-                        <div style="line-height:1.6; white-space: pre-wrap;">${n.body}</div>
-                        <div class="news-media">${media}</div>
-                    </div>`;
+                container.innerHTML += `<div class="news-item"><div style="display:flex; justify-content:space-between;"><div class="news-title">${n.title}</div>
+                    ${isAdmin ? `<button class="delete-btn" onclick="deleteNews(${i})">Supprimer</button>` : ''}</div>
+                    <div style="color:#666; font-size:0.8rem; margin-bottom:15px;">Posté le ${n.date}</div>
+                    <div style="line-height:1.6; white-space: pre-wrap;">${n.body}</div><div class="news-media">${media}</div></div>`;
             });
         }
+        function deleteNews(i) { if(!confirm("Supprimer ?")) return; const news = JSON.parse(localStorage.getItem('hub_news')); news.splice(i, 1); localStorage.setItem('hub_news', JSON.stringify(news)); loadNews(); }
 
-        function deleteNews(i) {
-            if(!confirm("Supprimer cette news ?")) return;
-            const news = JSON.parse(localStorage.getItem('hub_news'));
-            news.splice(i, 1);
-            localStorage.setItem('hub_news', JSON.stringify(news));
-            loadNews();
-        }
-
-        // Check session au démarrage
         const session = localStorage.getItem('hub_session');
         if(session) startApp(session);
     </script>
