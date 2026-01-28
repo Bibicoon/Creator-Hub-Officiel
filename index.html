@@ -49,20 +49,11 @@
         .pack-card-img { width: 100%; height: 70%; object-fit: cover; border-bottom: 2px solid #333; }
         .pack-card h3 { color: #fff; font-size: 1.1rem; text-transform: uppercase; font-weight: 800; height: 30%; display: flex; align-items: center; justify-content: center; }
 
-        .subpack-card { background: #1e1e1e; border: 2px solid #333; border-radius: 15px; transition: 0.3s; cursor: pointer; overflow: hidden; display: flex; flex-direction: column; aspect-ratio: 1 / 1.1; }
-        .subpack-card:hover { border-color: #FF0000; transform: scale(1.03); }
-        .subpack-img { width: 100%; height: 60%; object-fit: cover; border-bottom: 1px solid #333; }
-        .subpack-info { padding: 10px; height: 40%; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; text-align: center; }
-        .subpack-title { font-weight: 800; font-size: 0.9rem; color: white; margin-bottom: 4px; }
-        .subpack-description { font-size: 0.75rem; color: #aaa; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
         /* --- ADMIN & NEWS --- */
         .admin-panel { background: #1e1e1e; padding: 25px; border-radius: 15px; border-left: 5px solid #FF0000; margin-bottom: 40px; display: none; }
         .news-input, .news-textarea { width: 100%; background: #2a2a2a; border: 1px solid #333; color: white; padding: 12px; margin-bottom: 15px; border-radius: 8px; font-family: inherit; outline: none; }
         .file-label { background: #333; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: inline-block; border: 1px dashed #FF0000; color: #FF0000; font-weight: bold; font-size: 0.9rem; }
         .news-item { background: #1a1a1a; padding: 25px; border-radius: 15px; margin-bottom: 30px; border: 1px solid #333; }
-        .news-title { font-size: 1.8rem; font-weight: 800; color: #ffffff; }
-        .news-media img, .news-media video { max-width: 100%; border-radius: 10px; margin-top: 15px; }
         .delete-btn { background: #ff0000; color: white; border: none; padding: 4px 8px; border-radius: 5px; cursor: pointer; font-size: 0.7rem; font-weight: bold; margin-top: 8px; }
 
         footer { padding: 30px; text-align: center; background: #0f0f0f; border-top: 1px solid #222; margin-top: auto; }
@@ -73,7 +64,7 @@
     <div id="auth-overlay">
         <div class="auth-box">
             <h2 style="color:white; margin-bottom:10px;">Creator Hub</h2>
-            <p style="color:#888; font-size:0.85rem; margin-bottom:25px;">Entre ton pseudo pour continuer</p>
+            <p style="color:#888; font-size:0.85rem; margin-bottom:25px;">Entre ton pseudo ou ta clé admin</p>
             <input type="text" id="user" class="auth-input" placeholder="Pseudo" onkeypress="if(event.key === 'Enter') handleLogin()">
             <button class="auth-btn" onclick="handleLogin()">Rejoindre le Hub</button>
         </div>
@@ -92,8 +83,8 @@
             </nav>
             <div class="user-controls">
                 <span id="display-username" style="font-weight:bold; color:#fff; margin-right:5px;"></span>
-                <button onclick="changeUsername()" class="btn-small">Modifier</button>
-                <button onclick="logout()" class="btn-small">Quitter</button>
+                <button onclick="changeUsername()" class="btn-small">Changer</button>
+                <button onclick="logout()" class="btn-small">Déconnexion</button>
             </div>
         </header>
 
@@ -101,7 +92,7 @@
             <section id="hub" class="page-section active-section">
                 <div style="text-align:center; padding-top:20px;">
                     <h2 style="font-size:3rem; margin-bottom:20px; color:white;">Bienvenue, <span style="color:#FF0000;" id="welcome-name">Creator</span></h2>
-                    <p style="color:#888; max-width:600px; margin: 0 auto 30px;">Ta plateforme de ressources centralisée. Retrouve tes musiques, effets et outils au même endroit.</p>
+                    <p style="color:#888; max-width:600px; margin: 0 auto 30px;">Prêt à créer du contenu ? Accède à tes ressources ci-dessous.</p>
                     <button onclick="nav('packs')" class="auth-btn" style="width:auto; padding: 15px 40px;">Accéder aux ressources</button>
                 </div>
             </section>
@@ -164,10 +155,11 @@
     </div>
 
     <script>
-        const ADMIN_USERS = ['breezylegoat', 'blueredlegoat']; 
+        // --- CLÉS ADMIN MISES À JOUR ---
+        const ADMIN_KEYS = ['fqk1csdxq82ldsqfsdiqg', 'dqlfizasq1dflq6712fqjaa']; 
+        
         let currentCategory = "", newsFileBase64 = "", newsFileType = "", packFileBase64 = "";
 
-        // --- AUTH ---
         function handleLogin() {
             const u = document.getElementById('user').value.trim();
             if(!u) return alert("Choisis un pseudo !");
@@ -176,26 +168,30 @@
         }
 
         function changeUsername() {
-            const newName = prompt("Entre ton nouveau pseudo :", localStorage.getItem('hub_session'));
+            const newName = prompt("Entre ton nouveau pseudo ou clé admin :", localStorage.getItem('hub_session'));
             if (newName && newName.trim() !== "") {
                 localStorage.setItem('hub_session', newName.trim());
-                startApp(newName.trim()); // Relance l'app pour mettre à jour les droits admin
-                alert("Pseudo mis à jour !");
+                startApp(newName.trim());
+                alert("Identité mise à jour !");
             }
         }
 
         function checkIsAdmin() {
-            const currentUser = localStorage.getItem('hub_session');
-            return currentUser ? ADMIN_USERS.includes(currentUser.toLowerCase()) : false;
+            const user = localStorage.getItem('hub_session');
+            if(!user) return false;
+            // On vérifie si le pseudo actuel est l'une des deux clés admin (insensible à la casse)
+            return ADMIN_KEYS.includes(user.toLowerCase());
         }
 
         function startApp(user) {
             document.getElementById('auth-overlay').style.display = 'none';
             document.getElementById('app').style.display = 'flex';
-            document.getElementById('display-username').textContent = user;
-            document.getElementById('welcome-name').textContent = user;
             
+            // Si c'est un admin, on affiche un petit label spécial
             const isAdmin = checkIsAdmin();
+            document.getElementById('display-username').textContent = isAdmin ? "👑 Admin" : user;
+            document.getElementById('welcome-name').textContent = isAdmin ? "Admin" : user;
+            
             document.getElementById('admin-area').style.display = isAdmin ? 'block' : 'none';
             document.getElementById('pack-admin-panel').style.display = isAdmin ? 'block' : 'none';
             loadNews();
@@ -215,7 +211,7 @@
             if(id === 'news') items[2].classList.add('active');
         }
 
-        // --- FICHIERS ---
+        // --- GESTION FICHIERS ---
         document.getElementById('pack-file').addEventListener('change', function(e) {
             if(!e.target.files.length) return;
             const reader = new FileReader();
@@ -230,7 +226,7 @@
             reader.readAsDataURL(file);
         });
 
-        // --- PACKS ---
+        // --- LOGIQUE PACKS ---
         const catTitles = { 'full': '📦 Pack Complet', 'music': '🎵 Musiques & SFX', 'ext': '🧩 Extensions', 'art': '✏️ Illustration' };
         function openCategory(catId) { currentCategory = catId; nav('category-view'); document.getElementById('cat-title').textContent = catTitles[catId]; loadSubPacks(); }
         
@@ -248,7 +244,7 @@
 
         function loadSubPacks() {
             const container = document.getElementById('subpacks-container'), allPacks = JSON.parse(localStorage.getItem('hub_packs_data') || '{}'), list = allPacks[currentCategory] || [], isAdmin = checkIsAdmin();
-            container.innerHTML = list.length ? "" : "<p style='color:#666;'>Aucun pack ici.</p>";
+            container.innerHTML = list.length ? "" : "<p style='color:#666;'>Aucun pack disponible.</p>";
             list.forEach((p, i) => {
                 container.innerHTML += `<div class="subpack-card" onclick="window.open('${p.url}', '_blank')">
                     <img src="${p.img}" class="subpack-img">
@@ -258,9 +254,9 @@
                     </div></div>`;
             });
         }
-        function deletePack(i) { if(!confirm("Supprimer ?")) return; const all = JSON.parse(localStorage.getItem('hub_packs_data')); all[currentCategory].splice(i, 1); localStorage.setItem('hub_packs_data', JSON.stringify(all)); loadSubPacks(); }
+        function deletePack(i) { if(!confirm("Supprimer ce pack ?")) return; const all = JSON.parse(localStorage.getItem('hub_packs_data')); all[currentCategory].splice(i, 1); localStorage.setItem('hub_packs_data', JSON.stringify(all)); loadSubPacks(); }
 
-        // --- NEWS ---
+        // --- LOGIQUE NEWS ---
         function publishNews() {
             const t = document.getElementById('n-title').value, b = document.getElementById('n-body').value;
             if(!t || !b) return alert("Titre et contenu requis.");
@@ -271,16 +267,21 @@
         }
         function loadNews() {
             const container = document.getElementById('news-container'), news = JSON.parse(localStorage.getItem('hub_news') || '[]'), isAdmin = checkIsAdmin();
-            container.innerHTML = news.length ? "" : "<p style='color:#666;'>Aucune annonce.</p>";
+            container.innerHTML = news.length ? "" : "<p style='color:#666;'>Aucune annonce pour le moment.</p>";
             news.forEach((n, i) => {
-                let media = n.file ? (n.type === 'img' ? `<img src="${n.file}">` : `<video controls src="${n.file}"></video>`) : "";
-                container.innerHTML += `<div class="news-item"><div style="display:flex; justify-content:space-between;"><div class="news-title">${n.title}</div>
-                    ${isAdmin ? `<button class="delete-btn" onclick="deleteNews(${i})">Supprimer</button>` : ''}</div>
+                let media = n.file ? (n.type === 'img' ? `<img src="${n.file}" style="max-width:100%; border-radius:10px; margin-top:10px;">` : `<video controls src="${n.file}" style="max-width:100%; border-radius:10px; margin-top:10px;"></video>`) : "";
+                container.innerHTML += `<div class="news-item">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div class="news-title">${n.title}</div>
+                        ${isAdmin ? `<button class="delete-btn" onclick="deleteNews(${i})">Supprimer</button>` : ''}
+                    </div>
                     <div style="color:#666; font-size:0.8rem; margin-bottom:15px;">Posté le ${n.date}</div>
-                    <div style="line-height:1.6; white-space: pre-wrap;">${n.body}</div><div class="news-media">${media}</div></div>`;
+                    <div style="line-height:1.6; white-space: pre-wrap;">${n.body}</div>
+                    ${media}
+                </div>`;
             });
         }
-        function deleteNews(i) { if(!confirm("Supprimer ?")) return; const news = JSON.parse(localStorage.getItem('hub_news')); news.splice(i, 1); localStorage.setItem('hub_news', JSON.stringify(news)); loadNews(); }
+        function deleteNews(i) { if(!confirm("Supprimer cette news ?")) return; const news = JSON.parse(localStorage.getItem('hub_news')); news.splice(i, 1); localStorage.setItem('hub_news', JSON.stringify(news)); loadNews(); }
 
         const session = localStorage.getItem('hub_session');
         if(session) startApp(session);
