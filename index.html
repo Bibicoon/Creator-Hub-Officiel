@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Hub - App</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Styles Généraux --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #121212; color: #ffffff; font-family: 'Montserrat', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        /* --- Authentification --- */
+        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #121212; z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .auth-box { background: #1e1e1e; padding: 40px; border-radius: 20px; border: 2px solid #FF0000; width: 400px; text-align: center; box-shadow: 0 0 20px rgba(255, 0, 0, 0.2); }
+        .auth-input { width: 100%; padding: 12px; margin-bottom: 15px; background: #2a2a2a; border: 1px solid #333; color: white; border-radius: 8px; outline: none; }
+        .auth-input:focus { border-color: #FF0000; }
+        .auth-btn { width: 100%; padding: 12px; background: #FF0000; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px; transition: 0.3s; }
+        .auth-btn:hover { background: #cc0000; }
+        .auth-btn.secondary { background: transparent; border: 1px solid #FF0000; color: #FF0000; }
+        
+        /* --- Header --- */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; background-color: #1a1a1a; border-bottom: 3px solid #FF0000; }
+        .header-logo { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 900; }
+        .header-logo img { height: 40px; }
+        .nav-menu { display: flex; gap: 30px; }
+        .nav-item { font-weight: 700; cursor: pointer; color: #888; transition: 0.3s; position: relative; }
+        .nav-item:hover { color: #fff; }
+        .nav-item.active { color: #ffffff; }
+        .nav-item.active::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 2px; background-color: #FF0000; }
+
+        /* --- Main Content --- */
+        main { flex: 1; max-width: 1200px; margin: 0 auto; padding: 40px 20px; width: 100%; }
+        .page-section { display: none; animation: fadeIn 0.5s; }
+        .active-section { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- GRILLE DES PACKS --- */
+        .packs-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, 240px); 
+            gap: 25px; 
+            margin-top: 30px;
+            justify-content: center; 
+        }
+
+        /* NOUVEAU STYLE POUR LES PACKS PRINCIPAUX (CUBES AVEC IMAGES) */
+        .pack-card { 
+            background: #1e1e1e; border: 2px solid #333; border-radius: 15px; 
+            display: flex; flex-direction: column; /* Colonne pour img + texte */
+            text-align: center; transition: 0.3s; cursor: pointer; 
+            aspect-ratio: 1 / 1; 
+            padding: 0; /* Pas de padding pour coller l'image aux bords */
+            overflow: hidden; /* Empêche l'image de dépasser des bords arrondis */
+        }
+        .pack-card:hover { border-color: #FF0000; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(255,0,0,0.2); }
+        
+        /* IMAGE DANS LE PACK PRINCIPAL */
+        .pack-card-img {
+            width: 100%;
+            height: 70%; /* L'image prend 70% de la hauteur du cube */
+            object-fit: cover; /* Coupe l'image si nécessaire pour remplir */
+            border-bottom: 2px solid #333;
+        }
+
+        /* TITRE DANS LE PACK PRINCIPAL */
+        .pack-card h3 { 
+            color: #fff; font-size: 1.1rem; text-transform: uppercase; font-weight: 800; 
+            height: 30%; /* Le titre prend les 30% restants */
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* --- SOUS-PACKS (IDENTIQUE) --- */
+        .subpack-card { 
+            background: #1e1e1e; border: 2px solid #333; border-radius: 15px; 
+            transition: 0.3s; cursor: pointer; overflow: hidden; 
+            display: flex; flex-direction: column; aspect-ratio: 1 / 1.1; 
+        }
+        .subpack-card:hover { border-color: #FF0000; transform: scale(1.03); }
+        .subpack-img { width: 100%; height: 60%; object-fit: cover; border-bottom: 1px solid #333; }
+        .subpack-info { 
+            padding: 10px; height: 40%; display: flex; flex-direction: column; 
+            justify-content: flex-start; align-items: center; text-align: center;
+        }
+        .subpack-title { font-weight: 800; font-size: 0.9rem; color: white; margin-bottom: 4px; }
+        .subpack-description { 
+            font-size: 0.75rem; color: #aaa; line-height: 1.2; 
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; 
+        }
+
+        /* --- ADMIN & NEWS --- */
+        .admin-panel { background: #1e1e1e; padding: 25px; border-radius: 15px; border-left: 5px solid #FF0000; margin-bottom: 40px; display: none; }
+        .news-input, .news-textarea { width: 100%; background: #2a2a2a; border: 1px solid #333; color: white; padding: 12px; margin-bottom: 15px; border-radius: 8px; font-family: inherit; outline: none; }
+        .file-label { background: #333; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: inline-block; border: 1px dashed #FF0000; color: #FF0000; font-weight: bold; font-size: 0.9rem; }
+        
+        .news-item { background: #1a1a1a; padding: 25px; border-radius: 15px; margin-bottom: 30px; border: 1px solid #333; }
+        .news-title { font-size: 1.8rem; font-weight: 800; color: #ffffff; }
+        .news-media img, .news-media video { max-width: 100%; border-radius: 10px; margin-top: 15px; }
+
+        .delete-btn { background: #ff0000; color: white; border: none; padding: 4px 8px; border-radius: 5px; cursor: pointer; font-size: 0.7rem; font-weight: bold; margin-top: 8px; }
+
+        footer { padding: 30px; text-align: center; background: #0f0f0f; border-top: 1px solid #222; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <h2 style="color:white; margin-bottom:20px;">Creator Hub</h2>
+            <div id="error-msg" style="color:#ff4444; font-size:0.9rem; margin-bottom:15px; display:none;"></div>
+            <input type="text" id="user" class="auth-input" placeholder="Pseudo">
+            <input type="password" id="pass" class="auth-input" placeholder="Mot de passe">
+            <button class="auth-btn" onclick="handleAuth('login')">Se connecter</button>
+            <button class="auth-btn secondary" onclick="handleAuth('reg')">Créer un compte</button>
+        </div>
+    </div>
+
+    <div id="app" style="display:none; flex-direction: column; min-height: 100vh;">
+        <header>
+            <div class="header-logo">
+                <img src="creatorhub.png" alt="Logo" onerror="this.src='https://via.placeholder.com/40x40?text=CH'"> 
+                <span><span style="color:#FF0000;">CREATOR</span> HUB</span>
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-item active" onclick="nav('hub')">Accueil</div>
+                <div class="nav-item" onclick="nav('packs')">Packs</div>
+                <div class="nav-item" onclick="nav('news')">News</div>
+            </nav>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <span id="display-username" style="font-weight:bold; color:#fff;"></span>
+                <button onclick="logout()" style="background:none; border:1px solid #555; color:#888; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:0.8rem;">Déconnexion</button>
+            </div>
+        </header>
+
+        <main>
+            <section id="hub" class="page-section active-section">
+                <div style="text-align:center; padding-top:20px;">
+                    <h2 style="font-size:3rem; margin-bottom:20px; color:white;">Bienvenue, <span style="color:#FF0000;">Creator</span></h2>
+                    <p style="color:#888; max-width:600px; margin: 0 auto 30px;">Ta plateforme de ressources centralisée. Retrouve tes musiques, effets et outils au même endroit.</p>
+                    <button onclick="nav('packs')" class="auth-btn" style="width:auto; padding: 15px 40px;">Accéder aux ressources</button>
+                </div>
+            </section>
+
+            <section id="packs" class="page-section">
+                <h2 style="font-size:2rem; margin-bottom:30px; border-left: 5px solid #FF0000; padding-left: 15px;">Packs Disponibles</h2>
+                <div class="packs-grid">
+                    <div class="pack-card" onclick="openCategory('full')">
+                        <img src="packcomplet.png" class="pack-card-img" alt="Pack Complet" onerror="this.src='https://via.placeholder.com/300?text=Pack+Complet'">
+                        <h3>📦 Pack Complet</h3>
+                    </div>
+                    
+                    <div class="pack-card" onclick="openCategory('music')">
+                        <img src="sfxmusique.png" class="pack-card-img" alt="SFX" onerror="this.src='https://via.placeholder.com/300?text=Musique+SFX'">
+                        <h3>🎵 Musiques & SFX</h3>
+                    </div>
+
+                    <div class="pack-card" onclick="openCategory('ext')">
+                        <img src="extensions.png" class="pack-card-img" alt="Extensions" onerror="this.src='https://via.placeholder.com/300?text=Extensions'">
+                        <h3>🧩 Extensions</h3>
+                    </div>
+
+                    <div class="pack-card" onclick="openCategory('art')">
+                        <img src="illustration.png" class="pack-card-img" alt="Illustration" onerror="this.src='https://via.placeholder.com/300?text=Illustration'">
+                        <h3>✏️ Illustration</h3>
+                    </div>
+                </div>
+            </section>
+
+            <section id="category-view" class="page-section">
+                <button onclick="nav('packs')" style="background:none; border:1px solid #555; color:#aaa; padding:5px 15px; border-radius:20px; cursor:pointer; margin-bottom:20px;">← Retour</button>
+                <h2 id="cat-title" style="font-size:2rem; margin-bottom:30px; color:#FF0000;">Catégorie</h2>
+
+                <div id="pack-admin-panel" class="admin-panel">
+                    <h3 style="color:#FF0000; margin-bottom:15px;">➕ Ajouter un sous-pack</h3>
+                    <input type="text" id="p-name" class="news-input" placeholder="Nom du Pack">
+                    <input type="text" id="p-url" class="news-input" placeholder="Lien (Google Drive, Mega...)">
+                    <textarea id="p-desc" class="news-textarea" rows="2" placeholder="Description courte..."></textarea>
+                    
+                    <div style="margin-bottom:15px;">
+                        <label for="pack-file" class="file-label">🖼️ Image de couverture</label>
+                        <input type="file" id="pack-file" accept="image/*" style="display:none;">
+                        <span id="pack-file-name" style="margin-left:10px; color:#888; font-size:0.8rem;">Aucune image</span>
+                    </div>
+                    <button class="auth-btn" style="width:200px;" onclick="addPack()">Créer le Pack</button>
+                </div>
+
+                <div id="subpacks-container" class="packs-grid"></div>
+            </section>
+
+            <section id="news" class="page-section">
+                <div id="admin-area" class="admin-panel">
+                    <h3 style="margin-bottom:15px; color:#FF0000;">📢 Publier une annonce</h3>
+                    <input type="text" id="n-title" class="news-input" placeholder="Titre">
+                    <textarea id="n-body" class="news-textarea" rows="4" placeholder="Message..."></textarea>
+                    <input type="file" id="news-file" accept="image/*,video/*" style="display:none;">
+                    <label for="news-file" class="file-label">📁 Média (Img/Vid)</label>
+                    <button class="auth-btn" style="width:200px; margin-left:10px;" onclick="publishNews()">Publier</button>
+                </div>
+                <h2 style="font-size:2rem; margin-bottom:30px;">Dernières Annonces</h2>
+                <div id="news-container"></div>
+            </section>
+        </main>
+
+        <footer><span style="color:#666; font-size:0.9rem;">© 2026 Creator Hub.</span></footer>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const ADMIN_USERS = ['Breezy092', 'BlueRed']; // Liste des admins
+        
+        let currentCategory = "";
+        let newsFileBase64 = "", newsFileType = "", packFileBase64 = "";
+
+        // --- AUTH ---
+        function getDB() { 
+            // On pré-enregistre les admins dans la base locale au premier chargement
+            let db = JSON.parse(localStorage.getItem('hub_users') || '{}');
+            if (!db['Breezy092']) db['Breezy092'] = 'admin'; // Mot de passe par défaut
+            if (!db['BlueRed']) db['BlueRed'] = 'admin';
+            return db;
+        }
+        function saveDB(db) { localStorage.setItem('hub_users', JSON.stringify(db)); }
+
+        function checkIsAdmin() {
+            const currentUser = localStorage.getItem('hub_session');
+            return ADMIN_USERS.includes(currentUser);
+        }
+
+        function handleAuth(type) {
+            const u = document.getElementById('user').value.trim();
+            const p = document.getElementById('pass').value.trim();
+            const db = getDB();
+            if(!u || !p) return;
+            if(type === 'reg') {
+                if(db[u]) return alert("Pseudo pris.");
+                db[u] = p; saveDB(db); alert("Compte créé !");
+            } else {
+                if(db[u] === p) { localStorage.setItem('hub_session', u); startApp(u); } 
+                else alert("Identifiants incorrects.");
+            }
+        }
+
+        function startApp(user) {
+            document.getElementById('auth-overlay').style.display = 'none';
+            document.getElementById('app').style.display = 'flex';
+            document.getElementById('display-username').textContent = user;
+            
+            const isAdmin = checkIsAdmin();
+            document.getElementById('admin-area').style.display = isAdmin ? 'block' : 'none';
+            document.getElementById('pack-admin-panel').style.display = isAdmin ? 'block' : 'none';
+            loadNews();
+        }
+
+        function logout() { localStorage.removeItem('hub_session'); location.reload(); }
+
+        // --- NAVIGATION ---
+        function nav(id) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active-section'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.getElementById(id).classList.add('active-section');
+            const items = document.querySelectorAll('.nav-item');
+            if(id === 'hub') items[0].classList.add('active');
+            if(id === 'packs' || id === 'category-view') items[1].classList.add('active');
+            if(id === 'news') items[2].classList.add('active');
+        }
+
+        // --- GESTION FICHIERS ---
+        document.getElementById('pack-file').addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = (ex) => { 
+                packFileBase64 = ex.target.result; 
+                document.getElementById('pack-file-name').textContent = e.target.files[0].name;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        });
+
+        document.getElementById('news-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (ex) => { 
+                newsFileBase64 = ex.target.result;
+                newsFileType = file.type.startsWith('image') ? 'img' : 'video';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // --- GESTION PACKS ---
+        const catTitles = { 'full': '📦 Pack Complet', 'music': '🎵 Musiques & SFX', 'ext': '🧩 Extensions', 'art': '✏️ Illustration' };
+
+        function openCategory(catId) {
+            currentCategory = catId;
+            nav('category-view');
+            document.getElementById('cat-title').textContent = catTitles[catId];
+            loadSubPacks();
+        }
+
+        function addPack() {
+            const name = document.getElementById('p-name').value;
+            const url = document.getElementById('p-url').value;
+            const desc = document.getElementById('p-desc').value;
+            if(!name || !url) return alert("Nom et URL requis.");
+
+            const allPacks = JSON.parse(localStorage.getItem('hub_packs_data') || '{}');
+            if(!allPacks[currentCategory]) allPacks[currentCategory] = [];
+            
+            allPacks[currentCategory].push({ 
+                name, url, desc, 
+                img: packFileBase64 || 'https://via.placeholder.com/200?text=No+Image' 
+            });
+            
+            localStorage.setItem('hub_packs_data', JSON.stringify(allPacks));
+            alert("Pack ajouté !");
+            loadSubPacks();
+        }
+
+        function loadSubPacks() {
+            const container = document.getElementById('subpacks-container');
+            const allPacks = JSON.parse(localStorage.getItem('hub_packs_data') || '{}');
+            const list = allPacks[currentCategory] || [];
+            const isAdmin = checkIsAdmin();
+            
+            container.innerHTML = list.length ? "" : "<p style='color:#666;'>Aucun pack ici.</p>";
+            list.forEach((p, i) => {
+                container.innerHTML += `
+                    <div class="subpack-card" onclick="window.open('${p.url}', '_blank')">
+                        <img src="${p.img}" class="subpack-img">
+                        <div class="subpack-info">
+                            <div class="subpack-title">${p.name}</div>
+                            ${p.desc ? `<div class="subpack-description">${p.desc}</div>` : ''}
+                            ${isAdmin ? `<button class="delete-btn" onclick="event.stopPropagation(); deletePack(${i})">Supprimer</button>` : ''}
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function deletePack(i) {
+            const all = JSON.parse(localStorage.getItem('hub_packs_data'));
+            all[currentCategory].splice(i, 1);
+            localStorage.setItem('hub_packs_data', JSON.stringify(all));
+            loadSubPacks();
+        }
+
+        // --- GESTION NEWS ---
+        function publishNews() {
+            const t = document.getElementById('n-title').value;
+            const b = document.getElementById('n-body').value;
+            if(!t || !b) return alert("Titre et contenu requis.");
+            const news = JSON.parse(localStorage.getItem('hub_news') || '[]');
+            news.unshift({ title: t, body: b, file: newsFileBase64, type: newsFileType, date: new Date().toLocaleDateString() });
+            localStorage.setItem('hub_news', JSON.stringify(news));
+            location.reload();
+        }
+
+        function loadNews() {
+            const container = document.getElementById('news-container');
+            const news = JSON.parse(localStorage.getItem('hub_news') || '[]');
+            const isAdmin = checkIsAdmin();
+            container.innerHTML = news.length ? "" : "<p style='color:#666;'>Aucune annonce.</p>";
+            news.forEach((n, i) => {
+                let media = n.file ? (n.type === 'img' ? `<img src="${n.file}">` : `<video controls src="${n.file}"></video>`) : "";
+                container.innerHTML += `
+                    <div class="news-item">
+                        <div style="display:flex; justify-content:space-between;">
+                            <div class="news-title">${n.title}</div>
+                            ${isAdmin ? `<button class="delete-btn" onclick="deleteNews(${i})">Supprimer</button>` : ''}
+                        </div>
+                        <div style="color:#666; font-size:0.8rem; margin-bottom:15px;">Posté le ${n.date}</div>
+                        <div style="line-height:1.6;">${n.body}</div>
+                        <div class="news-media">${media}</div>
+                    </div>`;
+            });
+        }
+
+        function deleteNews(i) {
+            const news = JSON.parse(localStorage.getItem('hub_news'));
+            news.splice(i, 1);
+            localStorage.setItem('hub_news', JSON.stringify(news));
+            loadNews();
+        }
+
+        // Check session
+        const session = localStorage.getItem('hub_session');
+        if(session) startApp(session);
+    </script>
+</body>
+</html>
