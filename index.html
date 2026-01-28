@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creator Hub - Serveur Commun</title>
+    <title>Creator Hub</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,29 +17,36 @@
         .auth-box { background: #1e1e1e; padding: 40px; border-radius: 20px; border: 2px solid #FF0000; width: 400px; text-align: center; }
         .auth-input { width: 100%; padding: 12px; margin-bottom: 20px; background: #2a2a2a; border: 1px solid #333; color: white; border-radius: 8px; text-align: center; outline: none; }
         .auth-btn { width: 100%; padding: 12px; background: #FF0000; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .auth-btn:active { transform: scale(0.95); }
 
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; background-color: #1a1a1a; border-bottom: 3px solid #FF0000; }
         .header-logo { display: flex; align-items: center; gap: 10px; font-weight: 900; }
         .header-logo img { height: 40px; }
+        
+        /* ANIMATIONS BOUTONS NAVIGATION */
         .nav-menu { display: flex; gap: 30px; }
-        .nav-item { font-weight: 700; cursor: pointer; color: #888; position: relative; }
+        .nav-item { font-weight: 700; cursor: pointer; color: #888; position: relative; transition: all 0.2s ease; user-select: none; }
+        .nav-item:hover { color: #bbb; }
+        .nav-item:active { transform: scale(0.9); color: #fff; }
         .nav-item.active { color: #fff; }
         .nav-item.active::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 2px; background-color: #FF0000; }
 
-        .btn-header { background:none; border:1px solid #555; color:#888; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:0.75rem; }
+        .btn-header { background:none; border:1px solid #555; color:#888; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:0.75rem; transition: 0.2s; }
+        .btn-header:active { transform: scale(0.9); }
 
         main { flex: 1; max-width: 1200px; margin: 0 auto; padding: 40px 20px; width: 100%; }
         .page-section { display: none; }
         .active-section { display: block; }
 
-        /* --- DESIGN DES PACKS (ANTI-CASSE) --- */
         .packs-grid { display: grid; grid-template-columns: repeat(auto-fill, 240px); gap: 25px; justify-content: center; margin-top: 30px; }
         .pack-card { width: 240px; height: 280px; background: #1e1e1e; border: 2px solid #333; border-radius: 15px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; transition: 0.3s; }
         .pack-card:hover { border-color: #FF0000; transform: translateY(-5px); }
+        .pack-card:active { transform: scale(0.95); }
         .pack-card-img { width: 100%; height: 200px; object-fit: cover; }
         .pack-card h3 { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 800; }
 
-        .subpack-card { width: 240px; height: 340px; background: #1e1e1e; border: 2px solid #333; border-radius: 15px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; }
+        .subpack-card { width: 240px; height: 340px; background: #1e1e1e; border: 2px solid #333; border-radius: 15px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; transition: 0.2s; }
+        .subpack-card:active { transform: scale(0.96); }
         .subpack-img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid #333; }
         .subpack-info { padding: 12px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .subpack-title { font-weight: 800; font-size: 0.95rem; }
@@ -48,6 +55,10 @@
         .admin-panel { background: #1e1e1e; padding: 25px; border-radius: 15px; border-left: 5px solid #FF0000; margin-bottom: 40px; display: none; }
         .news-input, .news-textarea { width: 100%; background: #2a2a2a; border: 1px solid #333; color: white; padding: 12px; margin-bottom: 15px; border-radius: 8px; outline: none; font-family: inherit; }
         .delete-btn { background: #ff0000; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 0.7rem; font-weight: bold; margin-top: 10px; }
+
+        .news-item { background: #1a1a1a; padding: 30px; border-radius: 15px; margin-bottom: 30px; border: 1px solid #333; }
+        .news-media-container { width: 100%; margin-top: 20px; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
+        .news-media-container img { width: 100%; display: block; }
 
         footer { padding: 30px; text-align: center; color: #666; font-size: 0.8rem; border-top: 1px solid #222; margin-top: auto; }
     </style>
@@ -69,9 +80,9 @@
                 <span><span style="color:#FF0000;">CREATOR</span> HUB</span>
             </div>
             <nav class="nav-menu">
-                <div class="nav-item active" onclick="nav('hub')">Accueil</div>
-                <div class="nav-item" onclick="nav('packs')">Packs</div>
-                <div class="nav-item" onclick="nav('news')">News</div>
+                <div class="nav-item active" onclick="nav('hub', this)">Accueil</div>
+                <div class="nav-item" onclick="nav('packs', this)">Packs</div>
+                <div class="nav-item" onclick="nav('news', this)">News</div>
             </nav>
             <div style="display:flex; align-items:center; gap:10px;">
                 <span id="display-username" style="font-weight:bold;"></span>
@@ -84,8 +95,7 @@
                 <div style="text-align:center; padding-top:50px;">
                     <h2 style="font-size:3rem;">Salut, <span id="welcome-name" style="color:#FF0000;">Creator</span></h2>
                     <div id="admin-export" style="display:none; margin-top:20px;">
-                        <button onclick="exportData()" class="btn-header" style="border-color:#FF0000; color:#fff; background:#FF0000; padding:10px 20px;">🚀 Exporter pour GitHub (Public)</button>
-                        <p style="font-size:0.7rem; color:#888; margin-top:5px;">Utilise ça quand tu as fini d'ajouter tes packs pour les rendre publics.</p>
+                        <button onclick="exportData()" class="btn-header" style="border-color:#FF0000; color:#fff; background:#FF0000; padding:10px 20px;">bientot !</button>
                     </div>
                 </div>
             </section>
@@ -93,19 +103,19 @@
             <section id="packs" class="page-section">
                 <div class="packs-grid">
                     <div class="pack-card" onclick="openCategory('full')">
-                        <img src="packcomplet.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/240x200'">
+                        <img src="packcomplet.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/240x200?text=Pack+Complet'">
                         <h3>📦 Pack Complet</h3>
                     </div>
                     <div class="pack-card" onclick="openCategory('music')">
-                        <img src="sfxmusique.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/240x200'">
+                        <img src="sfxmusique.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/240x200?text=Musique+SFX'">
                         <h3>🎵 Musiques & SFX</h3>
                     </div>
                     <div class="pack-card" onclick="openCategory('ext')">
-                        <img src="extensions.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/240x200'">
+                        <img src="extensions.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/240x200?text=Extensions'">
                         <h3>🧩 Extensions</h3>
                     </div>
                     <div class="pack-card" onclick="openCategory('art')">
-                        <img src="illustration.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/240x200'">
+                        <img src="illustration.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/240x200?text=Illustration'">
                         <h3>✏️ Illustration</h3>
                     </div>
                 </div>
@@ -136,13 +146,36 @@
     </div>
 
     <script>
-        // --- CONFIGURATION PUBLIQUE ---
-        // C'est ici qu'on collera les données pour que TOUT LE MONDE les voie
-        const DATA_PUBLIQUE_PACKS = {}; 
-        const DATA_PUBLIQUE_NEWS = [];
+        const DATA_PUBLIQUE_PACKS = {
+            "full": [
+                { "name": "Skillfxx", "url": "https://skillfxx.github.io/index.html", "desc": "Réunion de tout les outils de monteur vidéo", "img": "skillfxx.png" },
+                { "name": "Renderdragon", "url": "https://renderdragon.org/", "desc": "Ce pack possède des animations, musiques et SFX, des images...", "img": "renderdragon.png" }
+            ],
+            "music": [
+                { "name": "Pack de Montage + SFX / Musiques", "url": "https://fileport.io/91qJeWWckEha", "desc": "Voici un pack pour des presets de montages, des sfx et des...", "img": "montage.png" }
+            ],
+            "ext": [
+                { "name": "Ostendo", "url": "https://chromewebstore.google.com/detail/ostendo-–-capture-beautif/bdfkognhpfgcoafcncpdgpjlbhoigpil", "desc": "Fait des belles captures d'écrans de vidéos sur YouTube !", "img": "ostendo.png" },
+                { "name": "PrevYou", "url": "https://chromewebstore.google.com/detail/prevyou-—-youtube-thumbna/lnkbdmjocdiomabiedmflmgikjlifham", "desc": "Vérifie tes miniatures sur l'accueil de YouTube !", "img": "prevyou.png" }
+            ],
+            "art": [
+                { "name": "Mcicons", "url": "https://mcicons.ccleaf.com", "desc": "Ce pack possèdes des icones uniquement sur Minecraft !", "img": "mcicons.png" },
+                { "name": "Noclip", "url": "https://noclip.website", "desc": "Cette extension permet de naviguer sur n'importe quelle jeu...", "img": "noclip.png" }
+            ]
+        };
+
+        const DATA_PUBLIQUE_NEWS = [
+            {
+                "title": "🏆 Bienvenue sur le Creator Hub !",
+                "date": "27/01/2026",
+                "body": "Le Creator Hub est un serveur Discord dédié aux créateurs de contenu et à tous ceux qui travaillent autour de la création vidéo...",
+                "file": "bienvenue.jpg",
+                "type": "img"
+            }
+        ];
 
         const ADMIN_KEYS = ['fqk1csdxq82ldsqfsdiqg', 'dqlfizasq1dflq6712fqjaa']; 
-        let currentCategory = "", packFileBase64 = "";
+        let currentCategory = "", packFileBase64 = "", newsFileBase64 = "", newsFileType = "";
 
         function handleLogin() {
             const u = document.getElementById('user').value.trim();
@@ -171,12 +204,16 @@
             if(currentCategory) loadSubPacks();
         }
 
-        function nav(id) {
+        function nav(id, el) {
             document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active-section'));
             document.getElementById(id).classList.add('active-section');
+            
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                el.classList.add('active');
+            }
         }
 
-        // --- GESTION DES PACKS ---
         function openCategory(id) {
             currentCategory = id;
             document.getElementById('cat-title').textContent = id.toUpperCase();
@@ -184,33 +221,16 @@
             loadSubPacks();
         }
 
-        document.getElementById('pack-file').addEventListener('change', function(e) {
-            const reader = new FileReader();
-            reader.onload = (ex) => { packFileBase64 = ex.target.result; };
-            reader.readAsDataURL(e.target.files[0]);
-        });
-
-        function addPack() {
-            const n = document.getElementById('p-name').value, u = document.getElementById('p-url').value, d = document.getElementById('p-desc').value;
-            const all = JSON.parse(localStorage.getItem('hub_packs_data') || JSON.stringify(DATA_PUBLIQUE_PACKS));
-            if(!all[currentCategory]) all[currentCategory] = [];
-            all[currentCategory].push({ name: n, url: u, desc: d, img: packFileBase64 || 'https://via.placeholder.com/240x180' });
-            localStorage.setItem('hub_packs_data', JSON.stringify(all));
-            loadSubPacks();
-        }
-
         function loadSubPacks() {
             const container = document.getElementById('subpacks-container');
-            // On mélange les données publiques et les données locales
             const local = JSON.parse(localStorage.getItem('hub_packs_data') || "{}");
             const all = Object.keys(local).length ? local : DATA_PUBLIQUE_PACKS;
-            
             const list = all[currentCategory] || [];
-            container.innerHTML = "";
+            container.innerHTML = list.length ? "" : "<p style='color:#666;'>Aucun pack.</p>";
             list.forEach((p, i) => {
                 container.innerHTML += `
                     <div class="subpack-card" onclick="window.open('${p.url}', '_blank')">
-                        <img src="${p.img}" class="subpack-img">
+                        <img src="${p.img}" class="subpack-img" onerror="this.src='https://via.placeholder.com/240x180'">
                         <div class="subpack-info">
                             <div class="subpack-title">${p.name}</div>
                             <div class="subpack-desc">${p.desc || ''}</div>
@@ -220,39 +240,28 @@
             });
         }
 
-        function deletePack(i) {
-            const all = JSON.parse(localStorage.getItem('hub_packs_data') || JSON.stringify(DATA_PUBLIQUE_PACKS));
-            all[currentCategory].splice(i, 1);
-            localStorage.setItem('hub_packs_data', JSON.stringify(all));
-            loadSubPacks();
-        }
-
-        // --- GESTION NEWS ---
-        function publishNews() {
-            const t = document.getElementById('n-title').value, b = document.getElementById('n-body').value;
-            const news = JSON.parse(localStorage.getItem('hub_news') || JSON.stringify(DATA_PUBLIQUE_NEWS));
-            news.unshift({ title: t, body: b, date: new Date().toLocaleDateString() });
-            localStorage.setItem('hub_news', JSON.stringify(news));
-            loadNews();
-        }
-
         function loadNews() {
             const container = document.getElementById('news-container');
             const local = JSON.parse(localStorage.getItem('hub_news') || "[]");
             const list = local.length ? local : DATA_PUBLIQUE_NEWS;
             container.innerHTML = "";
             list.forEach(n => {
-                container.innerHTML += `<div class="news-item"><h3>${n.title}</h3><p>${n.body}</p></div>`;
+                let media = n.file ? `<div class="news-media-container"><img src="${n.file}" onerror="this.style.display='none'"></div>` : "";
+                container.innerHTML += `
+                    <div class="news-item">
+                        <h3 style="font-size:1.5rem; color:#FFFFFF; margin-bottom:5px;">${n.title}</h3>
+                        <p style="color:#666; font-size:0.8rem; margin-bottom:15px;">${n.date}</p>
+                        <div style="white-space:pre-wrap; line-height:1.6;">${n.body}</div>
+                        ${media}
+                    </div>`;
             });
         }
 
-        // --- EXPORTATION ---
         function exportData() {
-            const packs = localStorage.getItem('hub_packs_data');
-            const news = localStorage.getItem('hub_news');
-            const data = `--- COPIE CE TEXTE ET ENVOIE-LE MOI ---\n\nPACKS:\n${packs}\n\nNEWS:\n${news}`;
-            console.log(data);
-            alert("Données exportées dans la console (F12) ! Copie le texte et envoie-le moi pour que je l'intègre au code public.");
+            const packs = localStorage.getItem('hub_packs_data') || JSON.stringify(DATA_PUBLIQUE_PACKS);
+            const news = localStorage.getItem('hub_news') || JSON.stringify(DATA_PUBLIQUE_NEWS);
+            console.log("PACKS:\n" + packs + "\n\nNEWS:\n" + news);
+            alert("Données exportées dans la console (F12) !");
         }
 
         const s = localStorage.getItem('hub_session');
