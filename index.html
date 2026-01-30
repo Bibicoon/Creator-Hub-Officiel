@@ -7,265 +7,148 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #121212; color: #ffffff; font-family: 'Montserrat', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        body { 
+            background-color: #121212; 
+            color: #ffffff; 
+            font-family: 'Montserrat', sans-serif; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+        }
         
-        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #121212; z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .auth-box { background: #1e1e1e; padding: 40px; border-radius: 20px; border: 2px solid #FF0000; width: 400px; text-align: center; }
-        .auth-input { width: 100%; padding: 12px; margin-bottom: 20px; background: #2a2a2a; border: 1px solid #333; color: white; border-radius: 8px; text-align: center; outline: none; }
-        .auth-btn { width: 100%; padding: 12px; background: #FF0000; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .auth-btn:active { transform: scale(0.95); }
+        header { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 40px 20px; 
+            background-color: #1a1a1a; 
+            border-bottom: 4px solid #FF0000; 
+        }
 
-        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; background-color: #1a1a1a; border-bottom: 3px solid #FF0000; }
-        .header-logo { display: flex; align-items: center; gap: 10px; font-weight: 900; }
-        .header-logo img { height: 40px; }
+        .header-logo { 
+            display: flex; 
+            align-items: center; 
+            gap: 20px; 
+        }
+
+        .header-logo img { height: 80px; }
+
+        .header-logo span {
+            font-weight: 900; 
+            font-size: 2.5rem; 
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        main { 
+            flex: 1; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            padding: 50px 20px; 
+            width: 100%; 
+        }
+
+        .packs-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 30px; 
+        }
         
-        /* ANIMATIONS BOUTONS NAVIGATION */
-        .nav-menu { display: flex; gap: 30px; }
-        .nav-item { font-weight: 700; cursor: pointer; color: #888; position: relative; transition: all 0.2s ease; user-select: none; }
-        .nav-item:hover { color: #bbb; }
-        .nav-item:active { transform: scale(0.9); color: #fff; }
-        .nav-item.active { color: #fff; }
-        .nav-item.active::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 2px; background-color: #FF0000; }
+        .pack-card { 
+            background: #1e1e1e; 
+            border: 2px solid #333; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            cursor: pointer;
+            /* AUCUNE TRANSITION ICI */
+        }
 
-        .btn-header { background:none; border:1px solid #555; color:#888; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:0.75rem; transition: 0.2s; }
-        .btn-header:active { transform: scale(0.9); }
+        /* Outline immédiate au survol */
+        .pack-card:hover { 
+            outline: 4px solid #FFD700;
+            border-color: transparent;
+        }
 
-        main { flex: 1; max-width: 1200px; margin: 0 auto; padding: 40px 20px; width: 100%; }
-        .page-section { display: none; }
-        .active-section { display: block; }
+        .pack-img { 
+            width: 100%; 
+            height: 180px; 
+            object-fit: cover; 
+            border-bottom: 1px solid #333; 
+            background: #252525;
+        }
 
-        .packs-grid { display: grid; grid-template-columns: repeat(auto-fill, 240px); gap: 25px; justify-content: center; margin-top: 30px; }
-        .pack-card { width: 240px; height: 280px; background: #1e1e1e; border: 2px solid #333; border-radius: 15px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; transition: 0.3s; }
-        .pack-card:hover { border-color: #FF0000; transform: translateY(-5px); }
-        .pack-card:active { transform: scale(0.95); }
-        .pack-card-img { width: 100%; height: 200px; object-fit: cover; }
-        .pack-card h3 { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 800; }
+        .pack-info { padding: 20px; }
 
-        .subpack-card { width: 240px; height: 340px; background: #1e1e1e; border: 2px solid #333; border-radius: 15px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; transition: 0.2s; }
-        .subpack-card:active { transform: scale(0.96); }
-        .subpack-img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid #333; }
-        .subpack-info { padding: 12px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .subpack-title { font-weight: 800; font-size: 0.95rem; }
-        .subpack-desc { font-size: 0.75rem; color: #aaa; }
+        .pack-title { 
+            font-weight: 900; 
+            font-size: 1.2rem; 
+            margin-bottom: 8px; 
+            text-transform: uppercase;
+        }
 
-        .admin-panel { background: #1e1e1e; padding: 25px; border-radius: 15px; border-left: 5px solid #FF0000; margin-bottom: 40px; display: none; }
-        .news-input, .news-textarea { width: 100%; background: #2a2a2a; border: 1px solid #333; color: white; padding: 12px; margin-bottom: 15px; border-radius: 8px; outline: none; font-family: inherit; }
-        .delete-btn { background: #ff0000; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 0.7rem; font-weight: bold; margin-top: 10px; }
+        .pack-desc { 
+            font-size: 0.85rem; 
+            color: #aaa; 
+            line-height: 1.5; 
+        }
 
-        .news-item { background: #1a1a1a; padding: 30px; border-radius: 15px; margin-bottom: 30px; border: 1px solid #333; }
-        .news-media-container { width: 100%; margin-top: 20px; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
-        .news-media-container img { width: 100%; display: block; }
-
-        footer { padding: 30px; text-align: center; color: #666; font-size: 0.8rem; border-top: 1px solid #222; margin-top: auto; }
+        footer { 
+            padding: 40px; 
+            text-align: center; 
+            color: #444; 
+            font-size: 0.8rem; 
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
     </style>
 </head>
 <body>
 
-    <div id="auth-overlay">
-        <div class="auth-box">
-            <h2>Creator Hub</h2>
-            <input type="text" id="user" class="auth-input" placeholder="Pseudo ou Clé Admin" onkeypress="if(event.key === 'Enter') handleLogin()">
-            <button class="auth-btn" onclick="handleLogin()">Entrer</button>
+    <header>
+        <div class="header-logo">
+            <img src="creatorhub.png" alt="Logo" onerror="this.style.display='none'"> 
+            <span>Creator Hub</span>
         </div>
-    </div>
+    </header>
 
-    <div id="app" style="display:none; flex-direction: column; min-height: 100vh;">
-        <header>
-            <div class="header-logo">
-                <img src="creatorhub.png" alt="Logo" onerror="this.src='https://via.placeholder.com/40x40?text=CH'"> 
-                <span><span style="color:#FF0000;">CREATOR</span> HUB</span>
-            </div>
-            <nav class="nav-menu">
-                <div class="nav-item active" onclick="nav('hub', this)">Accueil</div>
-                <div class="nav-item" onclick="nav('packs', this)">Packs</div>
-                <div class="nav-item" onclick="nav('news', this)">News</div>
-            </nav>
-            <div style="display:flex; align-items:center; gap:10px;">
-                <span id="display-username" style="font-weight:bold;"></span>
-                <button onclick="logout()" class="btn-header" style="border-color:#ff0000; color:#ff0000;">Déconnexion</button>
-            </div>
-        </header>
+    <main>
+        <div id="packs-container" class="packs-grid"></div>
+    </main>
 
-        <main>
-            <section id="hub" class="page-section active-section">
-                <div style="text-align:center; padding-top:50px;">
-                    <h2 style="font-size:3rem;">Salut, <span id="welcome-name" style="color:#FF0000;">Creator</span></h2>
-                    <div id="admin-export" style="display:none; margin-top:20px;">
-                        <button onclick="exportData()" class="btn-header" style="border-color:#FF0000; color:#fff; background:#FF0000; padding:10px 20px;">bientot !</button>
-                    </div>
-                </div>
-            </section>
-
-            <section id="packs" class="page-section">
-                <div class="packs-grid">
-                    <div class="pack-card" onclick="openCategory('full')">
-                        <img src="packcomplet.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/240x200?text=Pack+Complet'">
-                        <h3>📦 Pack Complet</h3>
-                    </div>
-                    <div class="pack-card" onclick="openCategory('music')">
-                        <img src="sfxmusique.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/240x200?text=Musique+SFX'">
-                        <h3>🎵 Musiques & SFX</h3>
-                    </div>
-                    <div class="pack-card" onclick="openCategory('ext')">
-                        <img src="extensions.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/240x200?text=Extensions'">
-                        <h3>🧩 Extensions</h3>
-                    </div>
-                    <div class="pack-card" onclick="openCategory('art')">
-                        <img src="illustration.png" class="pack-card-img" onerror="this.src='https://via.placeholder.com/240x200?text=Illustration'">
-                        <h3>✏️ Illustration</h3>
-                    </div>
-                </div>
-            </section>
-
-            <section id="category-view" class="page-section">
-                <button onclick="nav('packs')" class="btn-header">← Retour</button>
-                <h2 id="cat-title" style="color:#FF0000; margin: 20px 0;"></h2>
-                <div id="pack-admin-panel" class="admin-panel">
-                    <input type="text" id="p-name" class="news-input" placeholder="Nom">
-                    <input type="text" id="p-url" class="news-input" placeholder="Lien">
-                    <textarea id="p-desc" class="news-textarea" placeholder="Description"></textarea>
-                    <input type="file" id="pack-file" accept="image/*">
-                    <button class="auth-btn" onclick="addPack()">Ajouter</button>
-                </div>
-                <div id="subpacks-container" class="packs-grid"></div>
-            </section>
-
-            <section id="news" class="page-section">
-                <div id="admin-area" class="admin-panel">
-                    <input type="text" id="n-title" class="news-input" placeholder="Titre News">
-                    <textarea id="n-body" class="news-textarea" placeholder="Message"></textarea>
-                    <button class="auth-btn" onclick="publishNews()">Publier</button>
-                </div>
-                <div id="news-container"></div>
-            </section>
-        </main>
-    </div>
+    <footer>
+        &copy; 2026 CREATOR HUB - TOUS DROITS RÉSERVÉS.
+    </footer>
 
     <script>
-        const DATA_PUBLIQUE_PACKS = {
-            "full": [
-                { "name": "Skillfxx", "url": "https://skillfxx.github.io/index.html", "desc": "Réunion de tout les outils de monteur vidéo", "img": "skillfxx.png" },
-                { "name": "Renderdragon", "url": "https://renderdragon.org/", "desc": "Ce pack possède des animations, musiques et SFX, des images...", "img": "renderdragon.png" }
-            ],
-            "music": [
-                { "name": "Pack de Montage + SFX / Musiques", "url": "https://fileport.io/91qJeWWckEha", "desc": "Voici un pack pour des presets de montages, des sfx et des...", "img": "montage.png" }
-            ],
-            "ext": [
-                { "name": "Ostendo", "url": "https://chromewebstore.google.com/detail/ostendo-–-capture-beautif/bdfkognhpfgcoafcncpdgpjlbhoigpil", "desc": "Fait des belles captures d'écrans de vidéos sur YouTube !", "img": "ostendo.png" },
-                { "name": "PrevYou", "url": "https://chromewebstore.google.com/detail/prevyou-—-youtube-thumbna/lnkbdmjocdiomabiedmflmgikjlifham", "desc": "Vérifie tes miniatures sur l'accueil de YouTube !", "img": "prevyou.png" }
-            ],
-            "art": [
-                { "name": "Mcicons", "url": "https://mcicons.ccleaf.com", "desc": "Ce pack possèdes des icones uniquement sur Minecraft !", "img": "mcicons.png" },
-                { "name": "Noclip", "url": "https://noclip.website", "desc": "Cette extension permet de naviguer sur n'importe quelle jeu...", "img": "noclip.png" }
-            ]
-        };
-
-        const DATA_PUBLIQUE_NEWS = [
-            {
-                "title": "🏆 Bienvenue sur le Creator Hub !",
-                "date": "27/01/2026",
-                "body": "Le Creator Hub est un serveur Discord dédié aux créateurs de contenu et à tous ceux qui travaillent autour de la création vidéo...",
-                "file": "bienvenue.jpg",
-                "type": "img"
-            }
+        const MES_PACKS = [
+            { name: "Skillfxx", desc: "La boîte à outils ultime pour les monteurs vidéo.", url: "https://skillfxx.github.io/index.html" },
+            { name: "Renderdragon", desc: "Animations, musiques et SFX haute qualité.", url: "https://renderdragon.org/" },
+            { name: "Montage", desc: "Banque sonore et presets de montage indispensables.", url: "https://fileport.io/91qJeWWckEha" },
+            { name: "Ostendo", desc: "Capture d'écran optimisée pour le rendu YouTube.", url: "https://google.com" },
+            { name: "Prevyou", desc: "Prévisualisation de miniatures sur YouTube.", url: "https://google.com" },
+            { name: "Mcicons", desc: "Icônes stylisées pour vos projets Minecraft.", url: "https://mcicons.ccleaf.com" },
+            { name: "Noclip", desc: "Explorez les maps de vos jeux préférés.", url: "https://noclip.website" }
         ];
 
-        const ADMIN_KEYS = ['fqk1csdxq82ldsqfsdiqg', 'dqlfizasq1dflq6712fqjaa']; 
-        let currentCategory = "", packFileBase64 = "", newsFileBase64 = "", newsFileType = "";
+        const container = document.getElementById('packs-container');
 
-        function handleLogin() {
-            const u = document.getElementById('user').value.trim();
-            if(!u) return;
-            localStorage.setItem('hub_session', u);
-            startApp(u);
-        }
-
-        function logout() { localStorage.removeItem('hub_session'); location.reload(); }
-
-        function checkIsAdmin() {
-            const u = localStorage.getItem('hub_session');
-            return u ? ADMIN_KEYS.includes(u.toLowerCase()) : false;
-        }
-
-        function startApp(user) {
-            document.getElementById('auth-overlay').style.display = 'none';
-            document.getElementById('app').style.display = 'flex';
-            const isAdmin = checkIsAdmin();
-            document.getElementById('display-username').textContent = isAdmin ? "👑 ADMIN" : user;
-            document.getElementById('welcome-name').textContent = isAdmin ? "Admin" : user;
-            document.getElementById('admin-area').style.display = isAdmin ? 'block' : 'none';
-            document.getElementById('pack-admin-panel').style.display = isAdmin ? 'block' : 'none';
-            document.getElementById('admin-export').style.display = isAdmin ? 'block' : 'none';
-            loadNews();
-            if(currentCategory) loadSubPacks();
-        }
-
-        function nav(id, el) {
-            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active-section'));
-            document.getElementById(id).classList.add('active-section');
-            
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-                el.classList.add('active');
-            }
-        }
-
-        function openCategory(id) {
-            currentCategory = id;
-            document.getElementById('cat-title').textContent = id.toUpperCase();
-            nav('category-view');
-            loadSubPacks();
-        }
-
-        function loadSubPacks() {
-            const container = document.getElementById('subpacks-container');
-            const local = JSON.parse(localStorage.getItem('hub_packs_data') || "{}");
-            const all = Object.keys(local).length ? local : DATA_PUBLIQUE_PACKS;
-            const list = all[currentCategory] || [];
-            container.innerHTML = list.length ? "" : "<p style='color:#666;'>Aucun pack.</p>";
-            list.forEach((p, i) => {
-                container.innerHTML += `
-                    <div class="subpack-card" onclick="window.open('${p.url}', '_blank')">
-                        <img src="${p.img}" class="subpack-img" onerror="this.src='https://via.placeholder.com/240x180'">
-                        <div class="subpack-info">
-                            <div class="subpack-title">${p.name}</div>
-                            <div class="subpack-desc">${p.desc || ''}</div>
-                            ${checkIsAdmin() ? `<button class="delete-btn" onclick="event.stopPropagation(); deletePack(${i})">Supprimer</button>` : ''}
-                        </div>
-                    </div>`;
-            });
-        }
-
-        function loadNews() {
-            const container = document.getElementById('news-container');
-            const local = JSON.parse(localStorage.getItem('hub_news') || "[]");
-            const list = local.length ? local : DATA_PUBLIQUE_NEWS;
-            container.innerHTML = "";
-            list.forEach(n => {
-                let media = n.file ? `<div class="news-media-container"><img src="${n.file}" onerror="this.style.display='none'"></div>` : "";
-                container.innerHTML += `
-                    <div class="news-item">
-                        <h3 style="font-size:1.5rem; color:#FFFFFF; margin-bottom:5px;">${n.title}</h3>
-                        <p style="color:#666; font-size:0.8rem; margin-bottom:15px;">${n.date}</p>
-                        <div style="white-space:pre-wrap; line-height:1.6;">${n.body}</div>
-                        ${media}
-                    </div>`;
-            });
-        }
-
-        function exportData() {
-            const packs = localStorage.getItem('hub_packs_data') || JSON.stringify(DATA_PUBLIQUE_PACKS);
-            const news = localStorage.getItem('hub_news') || JSON.stringify(DATA_PUBLIQUE_NEWS);
-            console.log("PACKS:\n" + packs + "\n\nNEWS:\n" + news);
-            alert("Données exportées dans la console (F12) !");
-        }
-
-        const s = localStorage.getItem('hub_session');
-        if(s) startApp(s);
+        MES_PACKS.forEach(p => {
+            const imageName = p.name.toLowerCase() + ".png";
+            container.innerHTML += `
+                <div class="pack-card" onclick="window.open('${p.url}', '_blank')">
+                    <img src="${imageName}" class="pack-img" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300x200?text=${p.name}'">
+                    <div class="pack-info">
+                        <div class="pack-title">${p.name}</div>
+                        <div class="pack-desc">${p.desc}</div>
+                    </div>
+                </div>`;
+        });
     </script>
 </body>
 </html>
